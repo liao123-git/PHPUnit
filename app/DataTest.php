@@ -73,7 +73,7 @@ final class DataTest extends TestCase
     {
         $this->assertEquals(
             [1, 2, 3, 4, 5, 6],
-            ['1', 2, 33, 4, 5, 6]
+            ['1', 2, 3, 4, 5, 6]
         );
     }
 }
