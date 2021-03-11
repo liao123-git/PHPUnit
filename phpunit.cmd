@@ -1,1 +1,1 @@
-@php "%~dp0phpunit.phar" %* 
+@php "%~dp0vendor/bin/phpunit" %*

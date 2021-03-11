@@ -12,6 +12,7 @@
     - > PHPUnit x.y.z by Sebastian Bergmann and contributors
 - 也可以用 Composer 安装
     - > composer require --dev phpunit/phpunit ^latest
+    - > echo @php "%~dp0vendor/bin/phpunit" %*
     
 ### 编写 PHPUnit 测试
 - 针对类 Class 的测试写在类 ClassTest 中
@@ -51,6 +52,21 @@
 
 ### 对 PHP 错误、警告和通知进行测试
 - 如果测试代码使用了会触发错误的 PHP 内建函数，比如 fopen，有时候在测试中使用错误抑制符会很有用。通过抑制住错误通知，就能对返回值进行检查，否则错误通知将会导致 PHPUnit 的错误处理程序抛出异常。
+    - > @
+    
+### 对输出进行测试
+- 有时候，想要断言（比如说）某方法的运行过程中生成了预期的输出（例如，通过 echo 或 print）。PHPUnit\Framework\TestCase 类使用 PHP 的输出缓冲特性来为此提供必要的功能支持。
+- > expectOutputString()
+    - [更多方法](https://phpunit.readthedocs.io/zh_CN/latest/writing-tests-for-phpunit.html#writing-tests-for-phpunit-output-tables-api 'more')
+- 如果没有产生预期的输出，测试将计为失败。
+
+### 错误相关信息的输出
+- 当有测试失败时，PHPUnit 全力提供尽可能多的有助于找出问题所在的上下文信息。
+- 当生成的输出很长而难以阅读时，PHPUnit 将对其进行分割，并在每个差异附近提供少数几行上下文信息。
+- 边缘情况
+ - 当比较失败时，PHPUnit 为输入值建立文本表示，然后以此进行对比。这种实现导致在差异指示中显示出来的问题可能比实际上存在的多。
+ - 这种情况只出现在对数组或者对象使用 assertEquals() 或其他“弱”比较函数时。
+ - assertEquals 函数不会比对字符串和数值，但是输出的信息会显示字符串和数值的错误。
 
 ### PHP 基础
 - [PHP 官网](https://www.php.net 'PHP')
@@ -78,7 +94,6 @@
     - 执行完指针应该是会到下一行开头的。
 - > __ METHOD __
     - 返回类名称与函数的名称
-    
 ### 一些小坑
 - PHPUnit 官方文档中 ['示例 2.8 CsvFileIterator 类'](https://phpunit.readthedocs.io/zh_CN/latest/writing-tests-for-phpunit.html#writing-tests-for-phpunit-data-providers 'PHPUnit')
 ，从文件指针中读入一行并解析 CSV 字段 -- 'fgetcsv' 函数获取到的数组内的元素皆为字符串，如果需要数值类型需手动转换。
