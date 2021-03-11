@@ -53,6 +53,7 @@
 - 如果测试代码使用了会触发错误的 PHP 内建函数，比如 fopen，有时候在测试中使用错误抑制符会很有用。通过抑制住错误通知，就能对返回值进行检查，否则错误通知将会导致 PHPUnit 的错误处理程序抛出异常。
 
 ### PHP 基础
+- [PHP 官网](https://www.php.net 'PHP')
 - 开启 PHP 严格模式 
     - > declare(strict_types=1);
     - 规定函数返回值类型 void , int 等等
@@ -64,7 +65,6 @@
     - fopen() 将 filename 指定的名字资源绑定到一个流上。
     - mode 参数指定了所要求到该流的访问类型。
         - 比如 'r' 只读方式打开，将文件指针指向文件头。
-    - [官方文档](https://www.php.net/manual/zh/function.fopen.php 'fopen')
 - > func_get_args()
     - > func_get_args ( ) : array 
     - 获取函数参数列表的数组。
