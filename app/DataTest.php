@@ -1,79 +1,33 @@
 <?php declare(strict_types=1);
-
 use PHPUnit\Framework\TestCase;
-
-final class CsvFileIterator implements Iterator
-{
-    private $file;
-    private $key = 0;
-    private $current;
-
-    public function __construct(string $file)
-    {
-        $this->file = fopen($file, 'r');
-    }
-
-    public function __destruct()
-    {
-        fclose($this->file);
-    }
-
-    public function rewind(): void
-    {
-        rewind($this->file);
-
-        $this->current = fgetcsv($this->file);
-        $this->key = 0;
-    }
-
-    public function valid(): bool
-    {
-        return !feof($this->file);
-    }
-
-    public function key(): int
-    {
-        return $this->key;
-    }
-
-    public function current(): array
-    {
-        foreach ($this->current as $key => $item) {
-            $this->current[$key] = (int)$item;
-        }
-
-        return $this->current;
-    }
-
-    public function next(): void
-    {
-        $this->current = fgetcsv($this->file);
-
-        $this->key++;
-    }
-}
-
 
 final class DataTest extends TestCase
 {
-    /**
-     * @dataProvider additionProvider
-     */
-    public function testAdd(int $a, int $b, int $expected): void
+    private $stack;
+
+    protected function setUp(): void
     {
-        $this->assertSame($expected, $a + $b);
+        $this->stack = [];
     }
 
-    public function additionProvider(): CsvFileIterator
+    public function testEmpty(): void
     {
-        return new CsvFileIterator('public/test.csv');
+        $this->assertTrue(empty($this->stack));
     }
 
-    public function testExpectFooActualFoo(): void
+    public function testPush(): void
     {
-        $this->assertEquals(
-            [1, 2, 3, 4, 5, 6],
-            ['1', 2, 3, 4, 5, 6]
-        );
+        array_push($this->stack, 'foo');
+
+        $this->assertSame('foo', $this->stack[count($this->stack)-1]);
+        $this->assertFalse(empty($this->stack));
+    }
+
+    public function testPop(): void
+    {
+        array_push($this->stack, 'foo');
+
+        $this->assertSame('foo', array_pop($this->stack));
+        $this->assertTrue(empty($this->stack));
     }
 }
