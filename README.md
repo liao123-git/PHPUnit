@@ -85,6 +85,14 @@
     - 除了全局变量，类的静态属性也是一种全局状态。
     
 ### PHP 基础
+- 无用测试
+    - 默认情况下，PHPUnit 会更严格地对待事实上不测试任何内容的测试。此项检查可以用命令行选项  或在 PHPUnit 的配置文件中设置  来禁用。
+        - > --dont-report-useless-tests
+        - > beStrictAboutTestsThatDoNotTestAnything="false"
+        
+        
+        
+### PHP 基础
 - [PHP 官网](https://www.php.net 'PHP')
 - 开启 PHP 严格模式 
     - > declare(strict_types=1);
@@ -110,6 +118,7 @@
     - 执行完指针应该是会到下一行开头的。
 - > __ METHOD __
     - 返回类名称与函数的名称
+    
 ### 一些小坑
 - PHPUnit 官方文档中 ['示例 2.8 CsvFileIterator 类'](https://phpunit.readthedocs.io/zh_CN/latest/writing-tests-for-phpunit.html#writing-tests-for-phpunit-data-providers 'PHPUnit')
 ，从文件指针中读入一行并解析 CSV 字段 -- 'fgetcsv' 函数获取到的数组内的元素皆为字符串，如果需要数值类型需手动转换。

@@ -26,8 +26,5 @@ final class DataTest extends TestCase
     public function testPop(): void
     {
         array_push($this->stack, 'foo');
-
-        $this->assertSame('foo', array_pop($this->stack));
-        $this->assertTrue(empty($this->stack));
     }
 }
