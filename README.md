@@ -84,14 +84,62 @@
         - > global $foo 
     - 除了全局变量，类的静态属性也是一种全局状态。
     
-### PHP 基础
+### 有风险的测试
 - 无用测试
     - 默认情况下，PHPUnit 会更严格地对待事实上不测试任何内容的测试。此项检查可以用命令行选项  或在 PHPUnit 的配置文件中设置  来禁用。
         - > --dont-report-useless-tests
+            - 命令行
         - > beStrictAboutTestsThatDoNotTestAnything="false"
-        
-        
-        
+            - PHPUnit 的配置文件
+- 测试执行期间产生的输出
+    - PHPUnit 可以更严格对待测试执行期间产生的输出。 此项检查可以用命令行选项  或在 PHPUnit 的配置文件中设置  来启用。
+        - > --disallow-test-output
+            - 命令行
+        - >  beStrictAboutOutputDuringTests="true"
+            - PHPUnit 的配置文件
+- 测试执行时长的超时限制
+    - windows 下无法安装 pcntl 扩展，所以用不了
+    - 如果安装了 PHP_Invoker 包并且 pcntl 扩展可用，那么可以对测试的执行时长进行限制。此时间限制可以用命令行选项  或在 PHPUnit 的配置文件中设置  来启用。
+        - > --enforce-time-limit
+            - 命令行
+        - >  enforceTimeLimit="true"
+            - PHPUnit 的配置文件
+    - > @large
+        - 带有 @large 标注的测试如果执行时间超过 60 秒将视为失败。此超时限制可以通过配置文件中的 timeoutForLargeTests 属性进行配置。
+    - > @medium 
+        - 带有 @medium 标注的测试如果执行时间超过 60 秒将视为失败。此超时限制可以通过配置文件中的 timeoutForLargeTests 属性进行配置。
+    - > @small 
+        - 带有 @small 标注的测试如果执行时间超过 60 秒将视为失败。此超时限制可以通过配置文件中的 timeoutForLargeTests 属性进行配置。
+
+### 组织测试
+- 用文件系统来编排测试套件
+    - 编排测试套件的各种方式中，最简单的大概就是把所有测试用例源文件放在一个测试目录中。通过对测试目录进行递归遍历，PHPUnit 能自动发现并运行测试。
+    - 在这个项目的目录结构中，可以看到 tests 目录下的测试用例类镜像了 src 目录下被测系统（SUT，System Under Test）的包（package）与类（class）的结构。
+    - 要运行这个库的全部测试，将 PHPUnit 命令行测试执行器指向测试目录：
+        - > phpunit --bootstrap ./app/src/autoload.php ./app/tests
+        - 当 PHPUnit 命令行测试执行器指向一个目录时，它会在目录下查找 *Test.php 文件。
+    - 如果只想运行在 UserTest 文件中的 tests/UserTest.php 测试用例类中声明的测试，可以使用如下命令：
+        - > phpunit --bootstrap ./app/src/autoload.php ./app/tests/UserTest.php
+    - 这种方法的缺点是无法控制测试的运行顺序。
+- 用 XML 配置来编排测试套件
+    - XML 文件内的 <testsuite> 标签的 name 属性是你想要被测试的文件
+    - > phpunit --bootstrap xxx --testsuite xxx
+        - 要运行测试套件，用 --testsuite
+        - 第一个 autoload.php 文件路径
+        - 第二个 XML 文件内的 <testsuite> 标签的 name 属性
+
+### XML 配置文件
+- > phpunit
+    - > testsuite
+        - 必须拥有 name 属性，可以有一个或多个 <directory> 及 <file> 子元素，分别代表需要搜索测试的目录及元素。 
+    - > php
+        - 元素及其子元素用于配置 PHP 设置、常量以及全局变量。同时也可用于向 include_path 前面添加内容。
+        - > ini
+            - 此元素可用于设置 PHP 配置。
+        - > const
+            - 此元素可用于设置全局常数。
+
+
 ### PHP 基础
 - [PHP 官网](https://www.php.net 'PHP')
 - 开启 PHP 严格模式 
