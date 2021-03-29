@@ -1,75 +1,146 @@
 <?php declare(strict_types=1);
 
-use PHPUnit\Framework\TestCase;
+use app\helper\BaseTest;
 
-class UserTest extends TestCase
+class UserTest extends BaseTest
 {
     protected $user;
     protected $url;
 
-    protected function send_post($url, $data = false)
-    {
-        $ch = curl_init();//初始化curl
-        curl_setopt($ch, CURLOPT_URL, $url);//抓取指定网页
-        curl_setopt($ch, CURLOPT_HEADER, 0);//设置header
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);//要求结果为字符串且输出到屏幕上
-        if ($data) {
-            curl_setopt($ch, CURLOPT_POST, 1);//post提交方式
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        }
-        $results = curl_exec($ch);//运行curl
-        curl_close($ch);
-
-        return json_decode($results);
-    }
-
     public function setUp(): void
     {
         $this->user = new User('');
-        $this->url = constant('url');
-    }
-
-    public function testLoginSuccess(): string
-    {
         $this->url = constant('url') . 'login';
-        $data = $this->send_post($this->url, ["last_name" => "Wharlton", 'registration_code' => '52425V']);
-
-        $this->assertSame('Wharlton', $data->lastname);
-        $keys = ['firstname', 'lastname', 'username', 'email', 'login_token'];
-        foreach ($keys as $key) {
-            $this->assertObjectHasAttribute($key, $data);
-        }
-
-        return $data->login_token;
     }
 
-    public function testLoginFailed(): void
+    public function testLoginSuccess(): void
     {
-        $this->url = constant('url') . 'login';
-        $data = $this->send_post($this->url, ["last_name" => "Wharlton", 'registration_code' => 'admin']);
-        $this->assertSame("Invalid login", $data->message);
+        // test attendee 1
+        $resAttendee1 = $this->post($this->url, [
+            'lastname' => 'Yakovich',
+            'registration_code' => '35DGZX',
+        ]);
+
+        $this->assertEquals([
+            'firstname' => 'Horacio',
+            'lastname' => 'Yakovich',
+            'username' => 'attendee1',
+            'email' => 'hyakovich0@va.gov',
+            'token' => $this->LOGIN_TOKEN['attendee1'],
+        ], $resAttendee1);
+
+
+        // test attendee 2
+        $resAttendee2 = $this->post($this->url, [
+            'lastname' => 'Darthe',
+            'registration_code' => 'UP243M',
+        ]);
+
+        $this->assertEquals([
+            'firstname' => 'Nanon',
+            'lastname' => 'Darthe',
+            'username' => 'attendee2',
+            'email' => 'ndarthe1@list-manage.com',
+            'token' => $this->LOGIN_TOKEN['attendee2'],
+        ], $resAttendee2);
     }
 
-
-    /**
-     * @depends  testLoginSuccess
-     * */
-    public function testLogoutSuccess(string $token): string
+    public function testB3aSameLastname()
     {
-        $this->url = constant('url') . 'logout?token=' . $token;
-        $result = $this->send_post($this->url);
-        $this->assertSame("logout success", $result->message);
-        return $token;
+        // test first attendee with lastname Penton
+        $resAttendee1 = $this->post($this->url, [
+            'lastname' => 'Penton',
+            'registration_code' => '9CY9AR',
+        ]);
+
+        $this->assertEquals([
+            'firstname' => 'Cal',
+            'lastname' => 'Penton',
+            'username' => 'cpenton6',
+            'email' => 'cpenton6@weibo.com',
+            'token' => 'a110f35ba8fd08e07de8b275cf186b4f',
+        ], $resAttendee1);
+
+        // test second attendee with lastname Penton
+        $resAttendee2 = $this->post($this->url, [
+            'lastname' => 'Penton',
+            'registration_code' => '7BDK38',
+        ]);
+
+        $this->assertEquals([
+            'firstname' => 'Corbet',
+            'lastname' => 'Penton',
+            'username' => 'cleamon7',
+            'email' => 'cleamon7@pen.io',
+            'token' => '6844cd4abd0e90e287b5f138d02eda67',
+        ], $resAttendee2);
     }
 
-    /**
-     * @depends  testLogoutSuccess
-     * */
-    public function testLogoutFailed(string $token): void
+    public function testB3aSameRegistrationCode()
     {
-        $this->url = constant('url') . 'logout?token=123';
-        $result = $this->send_post($this->url);
-        $this->assertSame("Invalid token", $result->message);
+        // test first attendee with registration code 36PQWG
+        $resAttendee1 = $this->post($this->url, [
+            'lastname' => 'Arnson',
+            'registration_code' => '36PQWG',
+        ]);
+
+        $this->assertEquals([
+            'firstname' => 'Averil',
+            'lastname' => 'Arnson',
+            'username' => 'aarnsona',
+            'email' => 'aarnsona@princeton.edu',
+            'token' => '08ec7801fb781afadd1a9fcccd6d1769',
+        ], $resAttendee1);
+
+        // test second attendee with registration code 36PQWG
+        $resAttendee2 = $this->post($this->url, [
+            'lastname' => 'Dunk',
+            'registration_code' => '36PQWG',
+        ]);
+
+        $this->assertEquals([
+            'firstname' => 'Albertina',
+            'lastname' => 'Dunk',
+            'username' => 'adunkb',
+            'email' => 'adunkb@ifeng.com',
+            'token' => 'a39f449906c73a0f218501d91c3c9ee7',
+        ], $resAttendee2);
     }
+
+    public function testB3aInvalidLastname()
+    {
+        $res = $this->post($this->url, [
+            'lastname' => 'Yakovichwrong',
+            'registration_code' => '35DGZX',
+        ]);
+
+        $this->assertEquals([
+            'message' => 'Invalid login',
+        ], $res);
+    }
+
+    public function testB3aInvalidRegistrationCode()
+    {
+        $res = $this->post($this->url, [
+            'lastname' => 'Yakovich',
+            'registration_code' => 'AAAAAA',
+        ]);
+
+        $this->assertEquals([
+            'message' => 'Invalid login',
+        ], $res);
+    }
+
+    public function testB3aInvalidRequest()
+    {
+        $res = $this->post($this->url, [
+            'foo' => 'bar',
+        ]);
+
+        $this->assertEquals([
+            'message' => 'Invalid login',
+        ], $res);
+    }
+
 }
 

@@ -1,0 +1,19 @@
+<phpunit bootstrap="./app/src/autoload.php">
+    <testsuites>
+        <testsuite name="user">
+            <file>app/tests/EventTest.php</file>
+            <file>app/tests/EventDetailTest.php</file>
+            <file>app/tests/UserTest.php</file>
+            <file>app/tests/LogoutTest.php</file>
+            <file>app/tests/EventRegistration.php</file>
+            <file>app/tests/EventRegistrations.php</file>
+            <!--单个测试文件-->
+            <!--<directory>./app/tests</directory>-->
+            <!--递归遍历目录下所有的测试文件-->
+        </testsuite>
+    </testsuites>
+    <php>
+        <const name="url" value="http://localhost/01_JS-PHP_A/api/v1/"/>
+        <!--全局变量-->
+    </php>
+</phpunit>
